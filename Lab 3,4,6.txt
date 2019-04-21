@@ -1,0 +1,92 @@
+# Count the number of words starting with A
+
+%{
+	#include<stdio.h>
+	int count=0;
+
+%}
+
+%%
+((^A)|([ \t\n](A)))	{count++;}
+.	
+%%
+int main(int argc,char**argv)
+{
+FILE*fp=fopen(argv[1],"r");
+yyin=fp;
+ yylex();
+ printf("Number of word starting with A: %d\n",count);
+	return 0;
+fclose(fp);
+}
+int yywrap()
+{
+return 1;
+}
+
+OUTPUT
+lex name.l
+cc lex.yy.c -lfl
+./a.out
+
+----------------------------------------
+# Convert lower case alphabets to upper case and vice versa
+
+%option noyywrap
+%{
+	#include<stdio.h>
+
+%}
+lower [a-z]
+upper [A-Z]
+
+%%
+{lower} {printf("%c",yytext[0]-32);}
+{upper} {printf("%c",yytext[0]+32);}
+
+%%
+int main()
+{
+	yylex();
+	return 0;
+}
+
+------------------------------
+# Count the number of lines ending .com, .org,.in, .edu
+
+%option noyywrap
+%{
+	#include<stdio.h>
+	
+	int com_count=0,org_count=0,in_count=0,edu_count=0;
+
+%}
+
+%%
+
+.*org {org_count++;ECHO;}
+.*com {com_count++;ECHO;}
+.*edu {edu_count++;ECHO;}
+.*in {in_count++;ECHO;}
+
+
+.;
+
+%%
+int main(int argc,char**argv)
+{
+	FILE*fp=fopen(argv[1],"r");
+	yyin=fp;
+	yylex();
+	printf("\n com count %d",com_count);
+	printf("\n org count %d",org_count);
+	printf("\n in count %d",in_count);
+	printf("\n edu count %d",edu_count);
+	
+	return 0;
+	fclose(fp);
+	
+}
+
+-----------------------------------------
+
